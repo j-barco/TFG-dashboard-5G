@@ -1,0 +1,19 @@
+# Entorno virtual de Python
+venv/
+.venv/
+
+# Cachés de Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Configuración específica de cada máquina (nunca versionar)
+.env
+
+# Datos generados en tiempo de ejecución (presets guardados por el usuario)
+data/
+
+# Editor
+.vscode/
+.idea/
+.DS_Store

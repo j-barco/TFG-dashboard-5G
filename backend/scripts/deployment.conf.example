@@ -1,0 +1,23 @@
+# deployment.conf - Configuración específica de ESTA máquina.
+#
+# Copia este fichero como "deployment.conf" (sin ".example") en la MISMA
+# carpeta donde vivan gnb_ctl.sh y docker_ctl.sh (normalmente
+# /home/<usuario>/Scripts/), y ajusta los valores a tu propia instalación.
+#
+# Este es el ÚNICO fichero que hay que tocar al mover el proyecto a otra
+# máquina (por ejemplo, al laboratorio del tutor, o al equipo de la
+# defensa) -- los propios scripts no deberían necesitar ninguna edición.
+
+# --- Ruta al binario del gNB compilado (srsRAN Project) ---
+GNB_BIN="/path/to/srsRAN_Project/build/apps/gnb/gnb"
+
+# --- UHD compilada a mano para la USRP B210 (ver Implementación y
+#     Desarrollo -- Sección "Prueba de control con una USRP B210").
+#     Si en tu máquina usas la UHD del sistema en vez de una compilada
+#     aparte, deja estas dos vacías ("").
+UHD_LIB_DIR="/opt/uhd-4.6.0/lib"
+UHD_IMAGES_DIR="/opt/uhd-4.6.0/share/uhd/images"
+
+# --- Despliegue Docker del core Open5GS ---
+DOCKER_COMPOSE_FILE="/path/to/docker-open5gs/compose-files/basic/docker-compose.yaml"
+DOCKER_COMPOSE_ENV_FILE="/path/to/docker-open5gs/.env"

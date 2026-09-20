@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/*
+  Identidad visual del panel: instrumentación de red/radio (osciloscopio,
+  analizador de espectro), no una plantilla genérica de "dashboard SaaS".
+  Fondo azul-pizarra profundo (no negro puro), acento cian de "señal viva"
+  para estados correctos, ámbar para degradado, coral para caído --
+  deliberadamente distinto del rojo/verde puro de semáforo genérico.
+*/
+@theme {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --color-base-950: #070c16;
+  --color-base-900: #0b1220;
+  --color-base-800: #131b2e;
+  --color-base-700: #1c2740;
+  --color-base-600: #2a3652;
+  --color-base-500: #4a5a7d;
+  --color-base-400: #7d8caf;
+  --color-base-200: #c3cbe0;
+  --color-base-100: #e7ecf5;
+
+  --color-signal-cyan: #3ee6cf;
+  --color-signal-cyan-dim: #1f8a7d;
+  --color-signal-amber: #f2b25a;
+  --color-signal-coral: #f0603f;
+  --color-signal-violet: #8f8fff;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--color-base-950);
+  color: var(--color-base-100);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Textura de fondo sutil: rejilla técnica, como el retículo de un
+   osciloscopio -- el "riesgo estético" de la propuesta, deliberadamente
+   discreto para no competir con los datos. */
+.grid-backdrop {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-base-600) 35%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-base-600) 35%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+::selection {
+  background: var(--color-signal-cyan);
+  color: var(--color-base-950);
+}
+
+/* Foco de teclado visible, siempre -- accesibilidad, no decoración */
+:focus-visible {
+  outline: 2px solid var(--color-signal-cyan);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Barras del indicador "SignalPulse" -- elemento distintivo del diseño,
+   evocando un analizador de espectro. Cada barra usa un retardo distinto
+   para que el conjunto lea como actividad viva, no como parpadeo síncrono. */
+@keyframes signal-bar {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.signal-bar {
+  animation: signal-bar 1.1s ease-in-out infinite;
+  transform-origin: bottom;
+}
+.signal-bar:nth-child(1) { animation-delay: 0ms; }
+.signal-bar:nth-child(2) { animation-delay: 180ms; }
+.signal-bar:nth-child(3) { animation-delay: 90ms; }
+.signal-bar:nth-child(4) { animation-delay: 260ms; }
