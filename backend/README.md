@@ -78,12 +78,6 @@ asignarse dinámicamente por orden de arranque), lo que las hace estables
 tanto entre reinicios como entre máquinas distintas. Véase
 `docker-open5gs/compose-files/basic/docker-compose.yaml`.
 
-**Limitación conocida, no resuelta por este mecanismo**: la variable
-`DOCKER_HOST_IP` del despliegue Docker (dirección de la red local del
-equipo, necesaria únicamente para que un UE físico real alcance el UPF)
-sí es inherentemente específica de cada red, y debe ajustarse manualmente
-en el `.env` de `docker-open5gs/` en cada máquina.
-
 ## Arrancar el servidor
 
 ```bash

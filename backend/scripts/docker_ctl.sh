@@ -60,6 +60,24 @@ if [ "$action" = "nat-stats" ]; then
 fi
 
 if [ "$action" = "core-up" ]; then
+  # Detecta la IP de salida a la red local actual (la misma que usaría el
+  # equipo para llegar a Internet), y actualiza DOCKER_HOST_IP en el .env
+  # de docker-open5gs/ si ha cambiado -- evita tener que editarlo a mano
+  # cada vez que el equipo cambia de red (ver Limitaciones conocidas).
+  current_ip="$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')"
+  if [ -n "$current_ip" ] && [ -f "$DOCKER_COMPOSE_ENV_FILE" ]; then
+    if grep -q "^DOCKER_HOST_IP=" "$DOCKER_COMPOSE_ENV_FILE"; then
+      configured_ip="$(grep "^DOCKER_HOST_IP=" "$DOCKER_COMPOSE_ENV_FILE" | cut -d= -f2)"
+      if [ "$configured_ip" != "$current_ip" ]; then
+        sed -i "s/^DOCKER_HOST_IP=.*/DOCKER_HOST_IP=$current_ip/" "$DOCKER_COMPOSE_ENV_FILE"
+        echo "DOCKER_HOST_IP actualizada: $configured_ip -> $current_ip"
+      fi
+    else
+      echo "DOCKER_HOST_IP=$current_ip" >> "$DOCKER_COMPOSE_ENV_FILE"
+      echo "DOCKER_HOST_IP añadida: $current_ip"
+    fi
+  fi
+
   docker compose -f "$DOCKER_COMPOSE_FILE" --env-file "$DOCKER_COMPOSE_ENV_FILE" up -d
   exit $?
 fi
