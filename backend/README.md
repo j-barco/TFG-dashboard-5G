@@ -1,9 +1,4 @@
-# Backend del panel de monitorización y gestión — TFG Juan Barco Gil
-
-Segundo incremento (Fase 7): además de la monitorización (primer
-incremento), se añaden los *endpoints* de **gestión**: configuración del
-gNB, arranque/parada individual de las NFs del core (vía Docker), y
-alta/baja de suscriptores.
+# Backend del panel de monitorización y gestión
 
 ## Instalación
 
@@ -20,27 +15,31 @@ cp .env.example .env
 nano .env   # ajustar rutas y credenciales
 ```
 
-**Importante**: la contraseña por defecto del `.env.example` es `admin` —
-cámbiala antes de cualquier uso real, generando un hash nuevo con:
+**Importante**: la contraseña por defecto del `.env.example` es `admin`, recomiendo cambiarla antes de cualquier uso real, generando un hash nuevo con:
 ```bash
 python3 -c "import bcrypt; print(bcrypt.hashpw(b'tu_contraseña', bcrypt.gensalt()).decode())"
 ```
 
-## Configurar el privilegio mínimo para el control del gNB y del core
+## Configurar el privilegio para el control del gNB y del core
 
 Tanto `scripts/gnb_ctl.sh` como `scripts/docker_ctl.sh` son los únicos
 puntos por los que el backend puede actuar sobre el gNB y sobre el core en
 Docker respectivamente (ambos requieren privilegios elevados, ver
-Metodología del TFG). **El backend NUNCA debe correr como root, con `sudo`
+Metodología del TFG). 
+
+**El backend NUNCA debe correr como root, con `sudo`
 genérico, ni pertenecer al grupo `docker`** (pertenecer a ese grupo
-equivale en la práctica a privilegios de root sobre todo el sistema) — en
-su lugar, se concede una regla `sudoers` acotada a cada script:
+equivale en la práctica a privilegios de root sobre todo el sistema). En su lugar, se concede una regla `sudoers` acotada a cada script:
 
 ```bash
 sudo cp scripts/gnb_ctl.sh scripts/docker_ctl.sh scripts/deployment.conf.example /home/<usuario>/Scripts/
+
 sudo chmod +x /home/<usuario>/Scripts/gnb_ctl.sh /home/<usuario>/Scripts/docker_ctl.sh
+
 cp /home/<usuario>/Scripts/deployment.conf.example /home/<usuario>/Scripts/deployment.conf
-nano /home/<usuario>/Scripts/deployment.conf   # ajustar rutas si no coinciden
+
+nano /home/<usuario>/Scripts/deployment.conf   # ajustar rutas
+
 sudo visudo -f /etc/sudoers.d/dashboard
 ```
 Y añade (sustituyendo `<usuario>` por el usuario real con el que corre el backend):
@@ -49,26 +48,25 @@ Y añade (sustituyendo `<usuario>` por el usuario real con el que corre el backe
 <usuario> ALL=(ALL) NOPASSWD: /home/<usuario>/Scripts/docker_ctl.sh
 ```
 
-Verifica que ambas reglas funcionan sin pedir contraseña:
+Para verificar que ambas reglas funcionan sin pedir contraseña:
 ```bash
 sudo -n /home/<usuario>/Scripts/gnb_ctl.sh status
 sudo -n /home/<usuario>/Scripts/docker_ctl.sh start amf
 ```
 
-## Portabilidad: mover el proyecto a otra máquina
+## Portabilidad
 
 El proyecto está pensado para que **solo dos ficheros, ninguno de ellos
 versionado, contengan valores específicos de la máquina en la que se
-ejecuta** -- todo lo demás (código Python, scripts *bash*, plantillas) es
+ejecuta**, todo lo demás (código Python, scripts *bash*, plantillas) es
 igual en cualquier sitio:
 
-| Fichero | Dónde vive | Qué contiene |
+| Fichero | Dónde está | Qué contiene |
 |---|---|---|
 | `.env` | Junto al backend | Credenciales, `AUTH_ENABLED`, rutas de scripts/config del gNB |
 | `deployment.conf` | Junto a `gnb_ctl.sh`/`docker_ctl.sh` (p. ej. `/home/<usuario>/Scripts/`) | Ruta del binario del gNB, de la UHD compilada a mano, y del `docker-compose.yaml`/`.env` de Docker |
 
-Al mover el proyecto a otra máquina (por ejemplo, al laboratorio del
-tutor, o el día de la defensa), basta con:
+Al mover el proyecto a otra máquina, es suficiente con:
 1. Copiar `.env.example` → `.env` y `deployment.conf.example` →
    `deployment.conf`, ajustando las rutas de esa máquina concreta.
 2. Repetir la configuración de `sudoers` (Sección anterior).
@@ -77,7 +75,7 @@ tutor, o el día de la defensa), basta con:
 Adicionalmente, las 10 funciones de red del core en Docker tienen su IP
 interna **fijada explícitamente** en `docker-compose.yaml` (en vez de
 asignarse dinámicamente por orden de arranque), lo que las hace estables
-tanto entre reinicios como entre máquinas distintas -- ver
+tanto entre reinicios como entre máquinas distintas. Véase
 `docker-open5gs/compose-files/basic/docker-compose.yaml`.
 
 **Limitación conocida, no resuelta por este mecanismo**: la variable

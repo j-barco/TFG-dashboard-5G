@@ -1,16 +1,4 @@
-# Frontend del panel de monitorización y gestión — TFG Juan Barco Gil
-
-React + Vite + Tailwind CSS v4, consumiendo el backend FastAPI del mismo
-proyecto (`dashboard-backend/`).
-
-## Identidad visual
-
-El diseño se aparta deliberadamente de la plantilla genérica de "panel
-SaaS" (fondo negro puro + verde neón, o crema + terracota): fondo azul-
-pizarra profundo, indicador de estado en forma de barras de analizador de
-espectro (`SignalPulse`) en vez del habitual punto de semáforo, y una
-pareja tipográfica IBM Plex Sans/Mono + Space Grotesk, coherente con la
-naturaleza de instrumentación de radio del propio proyecto.
+# Frontend del panel de monitorización y gestión
 
 ## Instalación
 
@@ -24,7 +12,7 @@ npm install
 cp .env.example .env
 ```
 Por defecto asume que el backend corre en `http://localhost:8000`
-(mismo equipo). Ajusta `VITE_API_BASE_URL` si no es el caso.
+(mismo equipo). Ajustar `VITE_API_BASE_URL` si no es el caso.
 
 ## Arrancar en desarrollo
 
@@ -66,7 +54,7 @@ src/
     └── Subscribers.jsx     # Alta/baja de suscriptores
 ```
 
-## Notas de diseño relevantes para la memoria
+## Información adicional
 
 - **Degradación controlada**: si una consulta de sondeo falla, la interfaz
   mantiene el último dato válido en pantalla en vez de vaciarse, siguiendo
